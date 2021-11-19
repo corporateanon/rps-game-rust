@@ -1,32 +1,18 @@
-use dialoguer::console;
-use rand::{prelude::SliceRandom, thread_rng};
-
-#[derive(Debug)]
-enum Choice {
-    Rock,
-    Paper,
-    Scissors,
-}
-
-// struct Round {
-//     machine_choice: Option<Choice>,
-//     human_choice: Option<Choice>,
-// }
+mod game;
+use game::{get_choice_from_prompt, get_game_result, get_random_choice, GameResult};
 
 fn main() {
-    let labels = &["R", "P", "S"];
+    let computer_choice = get_random_choice();
+    let human_choice = get_choice_from_prompt();
 
-    let sel: usize = dialoguer::Select::new()
-        .with_prompt("Your choice")
-        .items(&labels[..])
-        .interact()
-        .unwrap();
-
-    let selection = labels[sel];
-
-    let choices = [Choice::Rock, Choice::Paper, Choice::Scissors];
-    let mut rng = thread_rng();
-    let choice = choices.choose(&mut rng).unwrap();
-    println!("{}", selection);
-    println!("{:#?}", choice);
+    println!("My choice  : {:#?}", computer_choice);
+    let game_result = get_game_result(computer_choice, human_choice);
+    match game_result.0 {
+        GameResult::Computer => println!("I am the winner!"),
+        GameResult::Human => println!("You are the winner!"),
+        GameResult::Tie => println!("It is a tie"),
+    }
+    if let Some(message) = game_result.1 {
+        println!("'{}'", message);
+    }
 }
