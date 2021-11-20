@@ -1,10 +1,26 @@
+use std::fmt;
+
 use rand::{prelude::SliceRandom, thread_rng};
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum Choice {
     Rock,
     Paper,
     Scissors,
+}
+
+impl fmt::Display for Choice {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match *self {
+                Choice::Paper => "Paper",
+                Choice::Rock => "Rock",
+                Choice::Scissors => "Scissors",
+            }
+        )
+    }
 }
 
 struct ChoiceCombination(Choice, Choice);
@@ -68,12 +84,11 @@ pub fn get_random_choice() -> Choice {
 }
 
 pub fn get_choice_from_prompt() -> Choice {
-    let labels = ["Rock", "Paper", "Scissors"];
     let matches = [Choice::Rock, Choice::Paper, Choice::Scissors];
 
-    let selected_index: usize = dialoguer::Select::new()
+    let selected_index = dialoguer::Select::new()
         .with_prompt("Your choice")
-        .items(&labels[..])
+        .items(&matches)
         .interact()
         .unwrap();
 
@@ -104,7 +119,7 @@ mod tests {
             let res = get_game_result(computer, human).0;
             assert_eq!(
                 res, expected_result,
-                "When computer choice is {:?} and human choice is {:?}, the result should be {:?}. Got {:?}",
+                "When computer choice is {} and human choice is {}, the result should be {:?}. Got {:?}",
                 computer, human, expected_result, res
             );
         }
