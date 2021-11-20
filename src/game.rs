@@ -1,6 +1,6 @@
 use rand::{prelude::SliceRandom, thread_rng};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Choice {
     Rock,
     Paper,
@@ -10,10 +10,11 @@ pub enum Choice {
 struct ChoiceCombination(Choice, Choice);
 
 pub enum Side {
-    Fisrt,
+    First,
     Second,
 }
 
+#[derive(PartialEq, Debug)]
 pub enum GameResult {
     Computer,
     Human,
@@ -26,7 +27,7 @@ fn which_side_won(combination: &ChoiceCombination) -> Option<(Side, String)> {
             Some((Side::Second, String::from("Paper covers rock")))
         }
         ChoiceCombination(Choice::Rock, Choice::Scissors) => {
-            Some((Side::Fisrt, String::from("Rock breaks scissors")))
+            Some((Side::First, String::from("Rock breaks scissors")))
         }
         ChoiceCombination(Choice::Paper, Choice::Scissors) => {
             Some((Side::Second, String::from("Scissors cut paper")))
@@ -39,21 +40,25 @@ pub fn get_game_result(
     computer_choice: Choice,
     human_choice: Choice,
 ) -> (GameResult, Option<String>) {
+    if computer_choice == human_choice {
+        return (GameResult::Tie, None);
+    }
+
     if let Some(side) = which_side_won(&ChoiceCombination(computer_choice, human_choice)) {
         return match side {
-            (Side::Fisrt, message) => (GameResult::Computer, Some(message)),
+            (Side::First, message) => (GameResult::Computer, Some(message)),
             (Side::Second, message) => (GameResult::Human, Some(message)),
         };
     };
 
     if let Some(side) = which_side_won(&ChoiceCombination(human_choice, computer_choice)) {
         return match side {
-            (Side::Fisrt, message) => (GameResult::Human, Some(message)),
+            (Side::First, message) => (GameResult::Human, Some(message)),
             (Side::Second, message) => (GameResult::Computer, Some(message)),
         };
     };
 
-    (GameResult::Tie, None)
+    panic!("Impossible state")
 }
 
 pub fn get_random_choice() -> Choice {
@@ -73,4 +78,35 @@ pub fn get_choice_from_prompt() -> Choice {
         .unwrap();
 
     matches[selected_index]
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::game::*;
+
+    #[test]
+    fn get_game_result_works() {
+        let table = vec![
+            (Choice::Rock, Choice::Rock, GameResult::Tie),
+            (Choice::Rock, Choice::Paper, GameResult::Human),
+            (Choice::Rock, Choice::Scissors, GameResult::Computer),
+            //
+            (Choice::Paper, Choice::Rock, GameResult::Computer),
+            (Choice::Paper, Choice::Paper, GameResult::Tie),
+            (Choice::Paper, Choice::Scissors, GameResult::Human),
+            //
+            (Choice::Scissors, Choice::Rock, GameResult::Human),
+            (Choice::Scissors, Choice::Paper, GameResult::Computer),
+            (Choice::Scissors, Choice::Scissors, GameResult::Tie),
+        ];
+
+        for (computer, human, expected_result) in table {
+            let res = get_game_result(computer, human).0;
+            assert_eq!(
+                res, expected_result,
+                "When computer choice is {:?} and human choice is {:?}, the result should be {:?}. Got {:?}",
+                computer, human, expected_result, res
+            );
+        }
+    }
 }
