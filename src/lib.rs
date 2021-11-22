@@ -23,8 +23,6 @@ impl fmt::Display for Choice {
     }
 }
 
-struct ChoiceCombination(Choice, Choice);
-
 pub enum Side {
     First,
     Second,
@@ -37,15 +35,13 @@ pub enum GameResult {
     Tie,
 }
 
-fn which_side_won(combination: &ChoiceCombination) -> Option<(Side, String)> {
-    match combination {
-        ChoiceCombination(Choice::Rock, Choice::Paper) => {
-            Some((Side::Second, String::from("Paper covers rock")))
-        }
-        ChoiceCombination(Choice::Rock, Choice::Scissors) => {
+fn which_side_won(first: Choice, second: Choice) -> Option<(Side, String)> {
+    match (first, second) {
+        (Choice::Rock, Choice::Paper) => Some((Side::Second, String::from("Paper covers rock"))),
+        (Choice::Rock, Choice::Scissors) => {
             Some((Side::First, String::from("Rock breaks scissors")))
         }
-        ChoiceCombination(Choice::Paper, Choice::Scissors) => {
+        (Choice::Paper, Choice::Scissors) => {
             Some((Side::Second, String::from("Scissors cut paper")))
         }
         _ => None,
@@ -57,24 +53,20 @@ pub fn get_game_result(
     human_choice: Choice,
 ) -> (GameResult, Option<String>) {
     if computer_choice == human_choice {
-        return (GameResult::Tie, None);
-    }
-
-    if let Some(side) = which_side_won(&ChoiceCombination(computer_choice, human_choice)) {
-        return match side {
+        (GameResult::Tie, None)
+    } else if let Some(side) = which_side_won(computer_choice, human_choice) {
+        match side {
             (Side::First, message) => (GameResult::Computer, Some(message)),
             (Side::Second, message) => (GameResult::Human, Some(message)),
-        };
-    };
-
-    if let Some(side) = which_side_won(&ChoiceCombination(human_choice, computer_choice)) {
-        return match side {
+        }
+    } else if let Some(side) = which_side_won(human_choice, computer_choice) {
+        match side {
             (Side::First, message) => (GameResult::Human, Some(message)),
             (Side::Second, message) => (GameResult::Computer, Some(message)),
-        };
-    };
-
-    panic!("Impossible state")
+        }
+    } else {
+        panic!("Impossible state")
+    }
 }
 
 pub fn get_random_choice() -> Choice {
