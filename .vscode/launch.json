@@ -7,15 +7,15 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'rust-learning'",
+            "name": "Debug executable 'rpsgame'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=rust-learning",
-                    "--package=rust-learning"
+                    "--bin=rpsgame",
+                    "--package=rpsgame"
                 ],
                 "filter": {
-                    "name": "rust-learning",
+                    "name": "rpsgame",
                     "kind": "bin"
                 }
             },
@@ -25,16 +25,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'rust-learning'",
+            "name": "Debug unit tests in executable 'rpsgame'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=rust-learning",
-                    "--package=rust-learning"
+                    "--bin=rpsgame",
+                    "--package=rpsgame"
                 ],
                 "filter": {
-                    "name": "rust-learning",
+                    "name": "rpsgame",
                     "kind": "bin"
                 }
             },

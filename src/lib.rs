@@ -97,7 +97,7 @@ pub fn get_choice_from_prompt() -> Choice {
 
 #[cfg(test)]
 mod tests {
-    use crate::game::*;
+    use crate::*;
 
     #[test]
     fn get_game_result_works() {

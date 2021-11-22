@@ -1,5 +1,4 @@
-mod game;
-use game::{get_choice_from_prompt, get_game_result, get_random_choice, GameResult};
+use rpsgame::*;
 
 fn main() {
     let computer_choice = get_random_choice();
